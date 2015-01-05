@@ -1,23 +1,15 @@
-package com.simplerecipemanager.core;
+package org.bdawg.simplerecipemanager.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMarshalling;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.simplerecipemanager.db.OvenFanMarshaller;
-import com.simplerecipemanager.db.OvenTempMarshaller;
-import com.simplerecipemanager.db.RemoteTable;
-import com.simplerecipemanager.db.RemotedTableMarshaller;
-import com.simplerecipemanager.db.RemotedTableSetMarhsaller;
-import com.simplerecipemanager.db.UUIDMarshaller;
 
-public class Recipe {
+public class Recipe implements Serializable {
 
     public static final String TABLE_NAME = "Recipes";
 
@@ -71,6 +63,7 @@ public class Recipe {
         this.oven_time = oven_time;
     }
 
+    @JsonIgnore
     public Map<Yield, Set<IngredientAndAmount>> getIngredients() {
         return ingredients;
     }
@@ -87,7 +80,7 @@ public class Recipe {
         this.source_book = source_book;
     }
 
-    @DynamoDBIgnore
+    @JsonIgnore
     public Set<Yield> getYields() {
         return this.ingredients.keySet();
     }

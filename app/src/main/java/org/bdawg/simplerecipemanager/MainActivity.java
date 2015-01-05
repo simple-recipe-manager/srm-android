@@ -5,10 +5,12 @@ import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,7 +19,15 @@ import android.view.ViewGroup;
 import android.os.Build;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
+
+import org.bdawg.simplerecipemanager.domain.Recipe;
+import org.bdawg.simplerecipemanager.service.APIClient;
+
+import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 
 public class MainActivity extends Activity {
@@ -141,13 +151,49 @@ public class MainActivity extends Activity {
      */
     public static class PlaceholderFragment extends Fragment {
 
+        private static final String TAG = PlaceholderFragment.class.getName();
+
         public PlaceholderFragment() {
         }
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            Bundle args = getArguments();
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            Button b = (Button)rootView.findViewById(R.id.button);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AsyncTask<Void, Void, Recipe> newTask = new AsyncTask<Void, Void, Recipe>() {
+                        @Override
+                        protected Recipe doInBackground(Void... voids) {
+                            APIClient c = new APIClient();
+                            Recipe recipe = null;
+                            try {
+                                recipe = c.getRecipeForId("d2cd2a8a-6813-4a88-a816-08037adf9d22");
+                                return  recipe;
+                            } catch (IOException e) {
+                                Log.e(TAG, "Could not fetch recipe", e);
+                                return null;
+                            }
+                        }
+                    };
+                    try {
+                        Recipe r = newTask.execute().get();
+                        Bundle toPass = new Bundle();
+                        toPass.putSerializable("recipe", r);
+                        Fragment recipeFragment = new RecipeFragment();
+                        recipeFragment.setArguments(toPass);
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.content_frame, recipeFragment).commit();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
             return rootView;
         }
     }
