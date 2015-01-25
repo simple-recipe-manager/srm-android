@@ -2,6 +2,7 @@ package org.bdawg.simplerecipemanager.service;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.http.HttpResponse;
@@ -48,6 +49,7 @@ public class APIClient {
         String responseString = convertStreamToString(response.getEntity().getContent(), Charset.forName("UTF-8"));
         Log.d(TAG, responseString);
         ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         Recipe toReturn = mapper.readValue(responseString, Recipe.class);
         return toReturn;
 

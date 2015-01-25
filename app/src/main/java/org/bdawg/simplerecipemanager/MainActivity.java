@@ -171,7 +171,7 @@ public class MainActivity extends Activity {
                             APIClient c = new APIClient();
                             Recipe recipe = null;
                             try {
-                                recipe = c.getRecipeForId("d2cd2a8a-6813-4a88-a816-08037adf9d22");
+                                recipe = c.getRecipeForId("2c78730e-5f6b-4672-8d18-0632657f7c49");
                                 return  recipe;
                             } catch (IOException e) {
                                 Log.e(TAG, "Could not fetch recipe", e);

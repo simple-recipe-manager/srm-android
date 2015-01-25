@@ -1,24 +1,32 @@
 package org.bdawg.simplerecipemanager.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.io.Serializable;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class Recipe implements Serializable {
+import org.bdawg.simplerecipemanager.domain.Author;
+import org.bdawg.simplerecipemanager.domain.IngredientAndAmount;
+import org.bdawg.simplerecipemanager.domain.Note;
+import org.bdawg.simplerecipemanager.domain.OvenFan;
+import org.bdawg.simplerecipemanager.domain.OvenTemp;
+import org.bdawg.simplerecipemanager.domain.SourceBook;
+import org.bdawg.simplerecipemanager.domain.Step;
+import org.bdawg.simplerecipemanager.domain.Yield;
 
-    public static final String TABLE_NAME = "Recipes";
+public class Recipe implements Serializable{
 
-    private UUID recipe_uuid;
+    private UUID id;
     private String recipe_name;
     private OvenFan oven_fan; // Off, Low, High
     private OvenTemp oven_temp;
     private long oven_time;
-    private Map<Yield, Set<IngredientAndAmount>> ingredients;
     private Note notes;
     private SourceBook source_book;
     private Set<Author> source_authors;
@@ -26,17 +34,18 @@ public class Recipe implements Serializable {
     private Set<Step> steps;
     private Set<URL> imageURLs;
     private URL defaultImageURL;
+    private Map<String, Set<IngredientAndAmount>> ingredients;
+    private Set<Yield> yields;
 
     public Recipe() {
-
     }
 
-    public UUID getRecipe_uuid() {
-        return recipe_uuid;
+    public String getId() {
+        return id.toString();
     }
 
-    public void setRecipe_uuid(UUID recipe_uuid) {
-        this.recipe_uuid = recipe_uuid;
+    public void setId(String id) {
+        this.id = UUID.fromString(id);
     }
 
     public String getRecipe_name() {
@@ -63,26 +72,12 @@ public class Recipe implements Serializable {
         this.oven_time = oven_time;
     }
 
-    @JsonIgnore
-    public Map<Yield, Set<IngredientAndAmount>> getIngredients() {
-        return ingredients;
-    }
-
-    public void setIngredients(Map<Yield, Set<IngredientAndAmount>> ingredients) {
-        this.ingredients = ingredients;
-    }
-
     public SourceBook getSource_book() {
         return source_book;
     }
 
     public void setSource_book(SourceBook source_book) {
         this.source_book = source_book;
-    }
-
-    @JsonIgnore
-    public Set<Yield> getYields() {
-        return this.ingredients.keySet();
     }
 
     public Set<URL> getImageURLs() {
@@ -139,5 +134,21 @@ public class Recipe implements Serializable {
 
     public void setNotes(Note notes) {
         this.notes = notes;
+    }
+
+    public void setIngredients(Map<String, Set<IngredientAndAmount>> ingredients){
+        this.ingredients = ingredients;
+    }
+
+    public Map<String, Set<IngredientAndAmount>> getIngredients(){
+        return this.ingredients;
+    }
+
+    public Set<Yield> getYields(){
+        return this.yields;
+    }
+
+    public void setYields(Set<Yield> yields){
+        this.yields = yields;
     }
 }
