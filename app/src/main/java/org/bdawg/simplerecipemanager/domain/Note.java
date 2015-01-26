@@ -1,8 +1,9 @@
 package org.bdawg.simplerecipemanager.domain;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Note {
+public class Note implements Serializable {
 
 	private UUID id;
 	private String note;

@@ -1,31 +1,28 @@
 package org.bdawg.simplerecipemanager;
 
 import android.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 
+import org.bdawg.simplerecipemanager.domain.IngredientAndAmount;
 import org.bdawg.simplerecipemanager.domain.Recipe;
 import org.bdawg.simplerecipemanager.domain.Step;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 /**
  * Created by breland on 1/4/2015.
@@ -39,7 +36,7 @@ public class RecipeFragment extends Fragment {
         View recipeView = inflater.inflate(R.layout.fragment_recipe, container, false);
 
         Bundle args = getArguments();
-        Recipe r = (Recipe)args.getSerializable("recipe");
+        Recipe r = (Recipe) args.getSerializable("recipe");
 
         TextView titleView = (TextView) recipeView.findViewById(R.id.recipe_frag_title);
         TextView addedAt = (TextView) recipeView.findViewById(R.id.recipe_frag_added_at);
@@ -69,11 +66,27 @@ public class RecipeFragment extends Fragment {
         });
         StringBuilder orderedDirectionSteps = new StringBuilder();
         int step = 1;
-        for (Step s : steps){
+        for (Step s : steps) {
             orderedDirectionSteps.append(step + ". " + s.getStepDetails() + "\n");
             step++;
         }
         directionsText.setText(orderedDirectionSteps.toString());
+
+        LinearLayout ingredientChecklist = (LinearLayout) recipeView.findViewById(R.id.recipe_frag_ingr_check_list);
+        if (r.getIngredients().size() == 1) {
+            Set<IngredientAndAmount> ingrsAndAmounts = r.getIngredients().get(r.getIngredients().keySet().iterator().next());
+            for (IngredientAndAmount ia : ingrsAndAmounts) {
+                String formattedIngr = String.format("%.2f %s %s", ia.getValue(), ia.getUnit().getTag(), ia.getIngredient().getName());
+                IngredientView ingrView = new IngredientView(getActivity(), null);
+                ingrView.setText(formattedIngr);
+                ingredientChecklist.addView(ingrView);
+            }
+        } else {
+            for (String yieldId : r.getIngredients().keySet()) {
+
+            }
+        }
+
 
         return recipeView;
     }

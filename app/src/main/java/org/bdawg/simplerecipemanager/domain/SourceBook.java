@@ -1,9 +1,10 @@
 package org.bdawg.simplerecipemanager.domain;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class SourceBook {
+public class SourceBook implements Serializable {
 
 	public static final String TABLE_NAME = "Sources";
 

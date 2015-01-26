@@ -1,8 +1,9 @@
 package org.bdawg.simplerecipemanager.domain;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class ProcessingTag {
+public class ProcessingTag implements Serializable {
 	private UUID id;
 	private String tag;
 

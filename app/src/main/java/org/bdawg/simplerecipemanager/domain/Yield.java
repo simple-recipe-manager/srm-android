@@ -1,8 +1,9 @@
 package org.bdawg.simplerecipemanager.domain;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Yield {
+public class Yield implements Serializable{
     private UUID id;
     private long serves;
     private UnitTag unit;

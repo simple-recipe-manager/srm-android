@@ -1,6 +1,8 @@
 package org.bdawg.simplerecipemanager.domain;
 
-public class HACCP {
+import java.io.Serializable;
+
+public class HACCP implements Serializable{
 
 	private String critical_control_point;
 	private String control_point;

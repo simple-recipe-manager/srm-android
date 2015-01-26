@@ -1,6 +1,8 @@
 package org.bdawg.simplerecipemanager.domain;
 
-public class OvenTemp {
+import java.io.Serializable;
+
+public class OvenTemp implements Serializable {
 	private TemperatureUnit unit;
 	private long amount;
 

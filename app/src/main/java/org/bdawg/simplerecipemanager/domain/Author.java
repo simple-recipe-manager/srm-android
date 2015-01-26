@@ -1,8 +1,9 @@
 package org.bdawg.simplerecipemanager.domain;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Author {
+public class Author implements Serializable {
 	public static final String TABLE_NAME = "Authors";
 	private UUID id;
 	private String name;

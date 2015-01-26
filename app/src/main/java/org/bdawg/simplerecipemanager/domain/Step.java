@@ -1,8 +1,9 @@
 package org.bdawg.simplerecipemanager.domain;
 
+import java.io.Serializable;
 import java.util.UUID;
 
-public class Step {
+public class Step implements Serializable {
 
 	private UUID id;
 	private String stepDetails;

@@ -13,4 +13,6 @@
     <string name="added_text_format">added %s</string>
 
     <string name="recipe_frag_header_text">Directions</string>
+
+    <string name="recipe_frag_header_ingredient_text">Ingredients</string>
 </resources>
