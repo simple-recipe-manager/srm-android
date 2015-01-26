@@ -4,7 +4,9 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:layout_marginLeft="@dimen/recipe_frag_margins_side"
+    android:layout_marginRight="@dimen/recipe_frag_margins_side">
 
     <TextView
         android:layout_width="match_parent"
@@ -12,7 +14,7 @@
         android:textStyle="bold"
         android:textSize="@dimen/recipe_frag_title_size"
         style="@style/RecipeMaterialText"
-        android:textColor="@color/accent"
+        android:textColor="@color/primary"
         android:id="@+id/recipe_frag_title"/>
     <TextView
         android:layout_width="match_parent"
@@ -20,7 +22,7 @@
         android:id="@+id/recipe_frag_added_at"
         style="@style/RecipeMaterialText"
         android:textSize="@dimen/recipe_frag_added_at_size"
-        android:textColor="@color/accent"
+        android:textColor="@android:color/secondary_text_light"
         />
     <ScrollView
         android:layout_width="match_parent"
@@ -31,19 +33,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center" >
-                    <ImageView
-                        android:layout_width="fill_parent"
-                        android:layout_height="@dimen/recipe_frag_image"
-                        android:id="@+id/recipe_frag_cv_header_image"/>
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/recipe_frag_cv_header_directions"
-                        android:text="@string/recipe_frag_header_text"/>
-                    <TextView
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/recipe_frag_directions_text"/>
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <ImageView
+                            android:layout_width="fill_parent"
+                            android:layout_height="@dimen/recipe_frag_image"
+                            android:id="@+id/recipe_frag_cv_header_image"
+                            android:scaleType="fitXY"/>
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/recipe_frag_cv_header_directions"
+                            android:text="@string/recipe_frag_header_text"/>
+                        <TextView
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/recipe_frag_directions_text"/>
+                    </LinearLayout>
                 </android.support.v7.widget.CardView>
         </ScrollView>
     </LinearLayout>

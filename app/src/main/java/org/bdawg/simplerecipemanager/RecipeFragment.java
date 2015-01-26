@@ -34,6 +34,8 @@ public class RecipeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        getActivity().getActionBar().hide();
+
         View recipeView = inflater.inflate(R.layout.fragment_recipe, container, false);
 
         Bundle args = getArguments();
