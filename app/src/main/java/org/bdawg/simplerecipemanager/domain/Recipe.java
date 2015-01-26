@@ -36,6 +36,7 @@ public class Recipe implements Serializable{
     private URL defaultImageURL;
     private Map<String, Set<IngredientAndAmount>> ingredients;
     private Set<Yield> yields;
+    private long addedAt;
 
     public Recipe() {
     }
@@ -150,5 +151,13 @@ public class Recipe implements Serializable{
 
     public void setYields(Set<Yield> yields){
         this.yields = yields;
+    }
+
+    public long getAddedAt() {
+        return addedAt;
+    }
+
+    public void setAddedAt(long addedAt) {
+        this.addedAt = addedAt;
     }
 }

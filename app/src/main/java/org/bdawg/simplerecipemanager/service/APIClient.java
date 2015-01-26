@@ -1,9 +1,13 @@
 package org.bdawg.simplerecipemanager.service;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.koushikdutta.async.future.Future;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -19,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by breland on 1/4/2015.
@@ -36,23 +41,15 @@ public class APIClient {
         return new StringBuilder(String.format("%s://%s/", protocol, host));
     }
 
-    public Recipe getRecipeForId(String id) throws IOException {
+    public Future<Recipe> getRecipeForId(String id, Context context, FutureCallback<Recipe> callback) throws IOException {
+
         StringBuilder base = buildBase();
         base.append(recipeEndpoint);
         String fullURL = base.append(String.format("/%s", id)).toString();
-        HttpClient http = new DefaultHttpClient();
-        HttpUriRequest request = new HttpGet(fullURL);
-        HttpResponse response = http.execute(request);
-        if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
-            throw new IOException("Server did not return OK");
-        }
-        String responseString = convertStreamToString(response.getEntity().getContent(), Charset.forName("UTF-8"));
-        Log.d(TAG, responseString);
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        Recipe toReturn = mapper.readValue(responseString, Recipe.class);
-        return toReturn;
-
+        return Ion.with(context)
+                .load(fullURL)
+                .as(Recipe.class)
+                .setCallback(callback);
     }
 
     static String convertStreamToString(java.io.InputStream is, Charset charset) {
@@ -60,7 +57,11 @@ public class APIClient {
         return s.hasNext() ? s.next() : "";
     }
 
-    public Recipe getRecipeForId(UUID id) throws IOException {
-        return this.getRecipeForId(id.toString());
+    public Future<Recipe> getRecipeForId(UUID id, Context context, FutureCallback<Recipe> callback) throws IOException {
+        return this.getRecipeForId(id.toString(), context, callback);
+    }
+
+    public Recipe getRecipeForId(String id, Context context) throws IOException, ExecutionException, InterruptedException {
+        return getRecipeForId(id, context, null).get();
     }
 }

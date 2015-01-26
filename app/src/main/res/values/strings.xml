@@ -9,4 +9,8 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="action_websearch">Web search</string>
     <string name="app_not_available">Sorry, there\'s no web browser available</string>
+
+    <string name="added_text_format">added %s</string>
+
+    <string name="recipe_frag_header_text">Directions</string>
 </resources>

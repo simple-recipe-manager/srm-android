@@ -165,24 +165,11 @@ public class MainActivity extends Activity {
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    AsyncTask<Void, Void, Recipe> newTask = new AsyncTask<Void, Void, Recipe>() {
-                        @Override
-                        protected Recipe doInBackground(Void... voids) {
-                            APIClient c = new APIClient();
-                            Recipe recipe = null;
-                            try {
-                                recipe = c.getRecipeForId("2c78730e-5f6b-4672-8d18-0632657f7c49");
-                                return  recipe;
-                            } catch (IOException e) {
-                                Log.e(TAG, "Could not fetch recipe", e);
-                                return null;
-                            }
-                        }
-                    };
                     try {
-                        Recipe r = newTask.execute().get();
+                        APIClient c = new APIClient();
+                        Recipe recipe = c.getRecipeForId("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d", PlaceholderFragment.this.getActivity());
                         Bundle toPass = new Bundle();
-                        toPass.putSerializable("recipe", r);
+                        toPass.putSerializable("recipe", recipe);
                         Fragment recipeFragment = new RecipeFragment();
                         recipeFragment.setArguments(toPass);
                         FragmentManager fragmentManager = getFragmentManager();
@@ -190,6 +177,8 @@ public class MainActivity extends Activity {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
+                        e.printStackTrace();
+                    } catch (IOException e){
                         e.printStackTrace();
                     }
                 }
