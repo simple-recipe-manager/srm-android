@@ -17,6 +17,7 @@ import com.koushikdutta.ion.Ion;
 import org.bdawg.simplerecipemanager.domain.IngredientAndAmount;
 import org.bdawg.simplerecipemanager.domain.Recipe;
 import org.bdawg.simplerecipemanager.domain.Step;
+import org.bdawg.simplerecipemanager.utils.Rational;
 
 import java.text.DateFormat;
 import java.util.Arrays;
@@ -76,7 +77,16 @@ public class RecipeFragment extends Fragment {
         if (r.getIngredients().size() == 1) {
             Set<IngredientAndAmount> ingrsAndAmounts = r.getIngredients().get(r.getIngredients().keySet().iterator().next());
             for (IngredientAndAmount ia : ingrsAndAmounts) {
-                String formattedIngr = String.format("%.2f %s %s", ia.getValue(), ia.getUnit().getTag(), ia.getIngredient().getName());
+                StringBuilder amount = new StringBuilder();
+                int wholeAmount = (int) ia.getValue();
+                if (wholeAmount != ia.getValue()){
+                    //format
+                    amount.append(wholeAmount);
+                    amount.append(String.format(" %s", Rational.toRational(ia.getValue() - wholeAmount)));
+                } else {
+                    amount.append(wholeAmount);
+                }
+                String formattedIngr = String.format("%s %s %s", amount.toString(), ia.getUnit().getTag(), ia.getIngredient().getName());
                 IngredientView ingrView = new IngredientView(getActivity(), null);
                 ingrView.setText(formattedIngr);
                 ingredientChecklist.addView(ingrView);
