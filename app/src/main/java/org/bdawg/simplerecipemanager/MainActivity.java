@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import org.bdawg.simplerecipemanager.domain.Recipe;
 import org.bdawg.simplerecipemanager.service.APIClient;
@@ -162,12 +163,14 @@ public class MainActivity extends Activity {
             Bundle args = getArguments();
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             Button b = (Button)rootView.findViewById(R.id.button);
+            final TextView tv = (TextView) rootView.findViewById(R.id.edit_text_recipe_id);
+            tv.setText("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d");
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
                         APIClient c = new APIClient();
-                        Recipe recipe = c.getRecipeForId("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d", PlaceholderFragment.this.getActivity());
+                        Recipe recipe = c.getRecipeForId(tv.getText().toString(), PlaceholderFragment.this.getActivity());
                         Bundle toPass = new Bundle();
                         toPass.putSerializable("recipe", recipe);
                         Fragment recipeFragment = new RecipeFragment();

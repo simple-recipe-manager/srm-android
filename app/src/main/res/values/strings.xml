@@ -15,4 +15,7 @@
     <string name="recipe_frag_header_text">Directions</string>
 
     <string name="recipe_frag_header_ingredient_text">Ingredients</string>
+
+    <string name="hint_recipe_id">Recipe id</string>
+    <string name="button_get_text">Fetch</string>
 </resources>
