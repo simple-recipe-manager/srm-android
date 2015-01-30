@@ -7,4 +7,11 @@
     <dimen name="recipe_frag_image">500px</dimen>
     <dimen name="recipe_frag_margins_side">15dp</dimen>
     <dimen name="linear_layout_padding_top">10dp</dimen>
+
+    <dimen name="recipe_header_text_section_header_padding_left">10dp</dimen>
+    <dimen name="recipe_header_text_section_header_padding_top">10dp</dimen>
+    <dimen name="recipe_header_text_section_header_padding_bottom">@dimen/recipe_header_text_section_header_padding_top</dimen>
+
+
+    <dimen name="recipe_header_text_section_header_text_size">20dp</dimen>
 </resources>
