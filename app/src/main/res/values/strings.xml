@@ -18,4 +18,6 @@
 
     <string name="hint_recipe_id">Recipe id</string>
     <string name="button_get_text">Fetch</string>
+
+    <string name="recipe_frag_read_ingrs_text">Voice Thing</string>
 </resources>

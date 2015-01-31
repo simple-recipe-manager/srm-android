@@ -79,14 +79,14 @@ public class RecipeFragment extends Fragment {
             for (IngredientAndAmount ia : ingrsAndAmounts) {
                 StringBuilder amount = new StringBuilder();
                 int wholeAmount = (int) ia.getValue();
-                if (wholeAmount != ia.getValue()){
+                if (wholeAmount != ia.getValue()) {
                     //format
                     amount.append(wholeAmount);
                     amount.append(String.format(" %s", Rational.toRational(ia.getValue() - wholeAmount)));
                 } else {
                     amount.append(wholeAmount);
                 }
-                String formattedIngr = String.format("%s %s %s", amount.toString(), ia.getUnit().getTag(), ia.getIngredient().getName());
+                String formattedIngr = String.format("%s %s %s", amount.toString(), ia.getUnit().getAppropriateTag(ia), ia.getIngredient().getName());
                 IngredientView ingrView = new IngredientView(getActivity(), null);
                 ingrView.setText(formattedIngr);
                 ingredientChecklist.addView(ingrView);
