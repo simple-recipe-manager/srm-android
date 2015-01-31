@@ -1,6 +1,7 @@
 package org.bdawg.simplerecipemanager;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,6 +40,16 @@ public class RecipeFragment extends Fragment {
 
         Bundle args = getArguments();
         Recipe r = (Recipe) args.getSerializable("recipe");
+
+        Button readAsTTSButton = (Button) recipeView.findViewById(R.id.recipe_frag_btn_read_ingrs);
+        readAsTTSButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent recipeTTSIntent = new Intent(RecipeFragment.this.getActivity(), IngredientReadActivity.class);
+                recipeTTSIntent.putExtras(getArguments());
+                RecipeFragment.this.startActivity(recipeTTSIntent);
+            }
+        });
 
         TextView titleView = (TextView) recipeView.findViewById(R.id.recipe_frag_title);
         TextView addedAt = (TextView) recipeView.findViewById(R.id.recipe_frag_added_at);
