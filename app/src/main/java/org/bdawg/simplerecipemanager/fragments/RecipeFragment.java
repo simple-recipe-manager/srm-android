@@ -1,4 +1,4 @@
-package org.bdawg.simplerecipemanager;
+package org.bdawg.simplerecipemanager.fragments;
 
 import android.app.Fragment;
 import android.content.Intent;
@@ -16,6 +16,9 @@ import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 
+import org.bdawg.simplerecipemanager.views.IngredientView;
+import org.bdawg.simplerecipemanager.R;
+import org.bdawg.simplerecipemanager.activity.IngredientReadActivity;
 import org.bdawg.simplerecipemanager.domain.IngredientAndAmount;
 import org.bdawg.simplerecipemanager.domain.Recipe;
 import org.bdawg.simplerecipemanager.domain.Step;

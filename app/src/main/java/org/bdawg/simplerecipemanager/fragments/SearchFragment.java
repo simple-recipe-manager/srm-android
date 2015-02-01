@@ -1,4 +1,4 @@
-package org.bdawg.simplerecipemanager;
+package org.bdawg.simplerecipemanager.fragments;
 
 import android.app.Fragment;
 

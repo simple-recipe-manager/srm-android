@@ -1,4 +1,4 @@
-package org.bdawg.simplerecipemanager;
+package org.bdawg.simplerecipemanager.views;
 
 import android.content.Context;
 import android.graphics.Paint;
@@ -7,9 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import org.bdawg.simplerecipemanager.R;
 
 /**
  * Created by breland on 1/25/2015.
@@ -24,6 +25,7 @@ public class IngredientView extends RelativeLayout {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.ingr_view, this);
         textView = (TextView) findViewById(R.id.ingr_view_text);
+
         checkBox = (CheckBox) findViewById(R.id.ingr_view_checkbox);
         checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -34,6 +36,12 @@ public class IngredientView extends RelativeLayout {
                 } else {
                     textView.setPaintFlags(textView.getPaintFlags() ^ Paint.STRIKE_THRU_TEXT_FLAG);
                 }
+            }
+        });
+        textView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                IngredientView.this.checkBox.toggle();
             }
         });
     }
