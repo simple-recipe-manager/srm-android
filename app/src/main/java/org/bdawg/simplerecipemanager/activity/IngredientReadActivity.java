@@ -3,15 +3,19 @@ package org.bdawg.simplerecipemanager.activity;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 
-import org.bdawg.simplerecipemanager.domain.IngredientAndAmount;
-import org.bdawg.simplerecipemanager.domain.Recipe;
+
 import org.bdawg.simplerecipemanager.utils.Rational;
+import org.bdawg.simplerecipemanager.utils.TagHelper;
 import org.bdawg.simplerecipemanager.views.IngredientView;
 
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+
+import ly.whisk.model.IngredientAndAmount;
+import ly.whisk.model.Recipe;
 
 /**
  * Created by breland on 1/31/2015.
@@ -38,10 +42,10 @@ public class IngredientReadActivity extends AbstractMetricsActivity implements T
         ttsEngine = new TextToSpeech(this, this);
         this.speak(recipe.getRecipe_name());
         if (recipe.getIngredients().size() == 1) {
-            Set<IngredientAndAmount> ingrsAndAmounts = recipe.getIngredients().get(recipe.getIngredients().keySet().iterator().next());
+            Collection<IngredientAndAmount> ingrsAndAmounts = recipe.getIngredients();
             for (IngredientAndAmount ia : ingrsAndAmounts) {
                 StringBuilder amount = new StringBuilder();
-                int wholeAmount = (int) ia.getValue();
+                int wholeAmount = (int) ia.getValue().intValue();
                 if (wholeAmount != ia.getValue()) {
                     //format
                     amount.append(wholeAmount);
@@ -49,7 +53,7 @@ public class IngredientReadActivity extends AbstractMetricsActivity implements T
                 } else {
                     amount.append(wholeAmount);
                 }
-                String formattedIngr = String.format("%s %s %s", amount.toString(), ia.getUnit().getAppropriateTag(ia), ia.getIngredient().getName());
+                String formattedIngr = String.format("%s %s %s", amount.toString(), TagHelper.getAppropriateTag(ia), ia.getIngredient().getName());
                 this.speak(formattedIngr);
             }
         } else {

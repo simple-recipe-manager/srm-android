@@ -16,19 +16,23 @@ import android.widget.TextView;
 
 import com.koushikdutta.ion.Ion;
 
+import org.bdawg.simplerecipemanager.utils.TagHelper;
 import org.bdawg.simplerecipemanager.views.IngredientView;
 import org.bdawg.simplerecipemanager.R;
 import org.bdawg.simplerecipemanager.activity.IngredientReadActivity;
-import org.bdawg.simplerecipemanager.domain.IngredientAndAmount;
-import org.bdawg.simplerecipemanager.domain.Recipe;
-import org.bdawg.simplerecipemanager.domain.Step;
+
 import org.bdawg.simplerecipemanager.utils.Rational;
 
 import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
+
+import ly.whisk.model.IngredientAndAmount;
+import ly.whisk.model.Recipe;
+import ly.whisk.model.Step;
 
 /**
  * Created by breland on 1/4/2015.
@@ -59,7 +63,7 @@ public class RecipeFragment extends Fragment {
 
         titleView.setText(r.getRecipe_name());
         DateFormat df = DateFormat.getDateInstance();
-        addedAt.setText(String.format(this.getString(R.string.added_text_format), df.format(new Date(r.getAddedAt()))));
+        addedAt.setText(String.format(this.getString(R.string.added_text_format), df.format(new Date(r.getAdded_at()))));
 
 
         ImageView defaultImageView = (ImageView) recipeView.findViewById(R.id.recipe_frag_cv_header_image);
@@ -69,7 +73,7 @@ public class RecipeFragment extends Fragment {
 
         Ion.with(defaultImageView)
                 .animateIn(fadeInAnimation)
-                .load(r.getDefaultImageURL().toString());
+                .load(r.getDefault_image_url());
 
         TextView directionsText = (TextView) recipeView.findViewById(R.id.recipe_frag_directions_text);
 
@@ -83,31 +87,31 @@ public class RecipeFragment extends Fragment {
         StringBuilder orderedDirectionSteps = new StringBuilder();
         int step = 1;
         for (Step s : steps) {
-            orderedDirectionSteps.append(step + ". " + s.getStepDetails() + "\n");
+            orderedDirectionSteps.append(step + ". " + s.getStep_details() + "\n");
             step++;
         }
         directionsText.setText(orderedDirectionSteps.toString());
 
         LinearLayout ingredientChecklist = (LinearLayout) recipeView.findViewById(R.id.recipe_frag_ingr_check_list);
         if (r.getIngredients().size() == 1) {
-            Set<IngredientAndAmount> ingrsAndAmounts = r.getIngredients().get(r.getIngredients().keySet().iterator().next());
+            Collection<IngredientAndAmount> ingrsAndAmounts = r.getIngredients();
             for (IngredientAndAmount ia : ingrsAndAmounts) {
                 StringBuilder amount = new StringBuilder();
-                int wholeAmount = (int) ia.getValue();
-                if (wholeAmount != ia.getValue()) {
+                int wholeAmount = (int) ia.getValue().intValue();
+                if (wholeAmount != ia.getValue().doubleValue()) {
                     //format
                     amount.append(wholeAmount);
                     amount.append(String.format(" %s", Rational.toRational(ia.getValue() - wholeAmount)));
                 } else {
                     amount.append(wholeAmount);
                 }
-                String formattedIngr = String.format("%s %s %s", amount.toString(), ia.getUnit().getAppropriateTag(ia), ia.getIngredient().getName());
+                String formattedIngr = String.format("%s %s %s", amount.toString(), TagHelper.getAppropriateTag(ia), ia.getIngredient().getName());
                 IngredientView ingrView = new IngredientView(getActivity(), null);
                 ingrView.setText(formattedIngr);
                 ingredientChecklist.addView(ingrView);
             }
         } else {
-            for (String yieldId : r.getIngredients().keySet()) {
+            for (IngredientAndAmount ia : r.getIngredients()) {
 
             }
         }

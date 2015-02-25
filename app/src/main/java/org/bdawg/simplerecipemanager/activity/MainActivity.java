@@ -3,6 +3,7 @@ package org.bdawg.simplerecipemanager.activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
@@ -19,11 +20,14 @@ import android.widget.TextView;
 
 import org.bdawg.simplerecipemanager.R;
 import org.bdawg.simplerecipemanager.fragments.RecipeFragment;
-import org.bdawg.simplerecipemanager.domain.Recipe;
-import org.bdawg.simplerecipemanager.service.APIClient;
+
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+
+import ly.whisk.api.RecipesApi;
+import ly.whisk.api.client.ApiException;
+import ly.whisk.model.Recipe;
 
 
 public class MainActivity extends AbstractMetricsActivity {
@@ -113,13 +117,6 @@ public class MainActivity extends AbstractMetricsActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
-        }
-    }
-
     private void selectItem(int position) {
         // update the main content by replacing fragments
         Fragment fragment = new PlaceholderFragment();
@@ -135,7 +132,6 @@ public class MainActivity extends AbstractMetricsActivity {
         //setTitle();
         mDrawerLayout.closeDrawer(mDrawerList);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -177,14 +173,28 @@ public class MainActivity extends AbstractMetricsActivity {
             Button b = (Button) rootView.findViewById(R.id.button);
             final TextView tv = (TextView) rootView.findViewById(R.id.edit_text_recipe_id);
             tv.setText("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d");
+            final RecipesApi api = new RecipesApi();
+
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    AsyncTask<String, Void, Recipe> fetchTask = new AsyncTask<String, Void, Recipe>() {
+                        @Override
+                        protected Recipe doInBackground(String... params) {
+                            try {
+                                Recipe recipe = api.recipesGet(params[0], PlaceholderFragment.this.getActivity());
+                                return recipe;
+                            } catch (ApiException|InterruptedException|ExecutionException e) {
+                                e.printStackTrace();
+                                return null;
+                            }
+                        }
+                    };
                     try {
-                        APIClient c = new APIClient();
-                        Recipe recipe = c.getRecipeForId(tv.getText().toString(), PlaceholderFragment.this.getActivity());
+                        AsyncTask<String, Void, Recipe> result = fetchTask.execute(tv.getText().toString());
+                        Recipe fetched = result.get();
                         Bundle toPass = new Bundle();
-                        toPass.putSerializable("recipe", recipe);
+                        toPass.putSerializable("recipe", fetched);
                         Fragment recipeFragment = new RecipeFragment();
                         recipeFragment.setArguments(toPass);
                         FragmentManager fragmentManager = getFragmentManager();
@@ -193,12 +203,18 @@ public class MainActivity extends AbstractMetricsActivity {
                         e.printStackTrace();
                     } catch (ExecutionException e) {
                         e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
                     }
+
                 }
             });
             return rootView;
+        }
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectItem(position);
         }
     }
 }
