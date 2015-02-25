@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+
 import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.utils.TagHelper;
@@ -30,6 +31,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Set;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import ly.whisk.model.IngredientAndAmount;
 import ly.whisk.model.Recipe;
 import ly.whisk.model.Step;
@@ -39,16 +42,25 @@ import ly.whisk.model.Step;
  */
 public class RecipeFragment extends Fragment {
 
+    @InjectView(R.id.recipe_frag_btn_read_ingrs) Button readAsTTSButton;
+    @InjectView(R.id.recipe_frag_title) TextView titleView;
+    @InjectView(R.id.recipe_frag_added_at) TextView addedAt;
+    @InjectView(R.id.recipe_frag_cv_header_image) ImageView defaultImageView;
+    @InjectView(R.id.recipe_frag_directions_text) TextView directionsText;
+
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         getActivity().getActionBar().hide();
 
         View recipeView = inflater.inflate(R.layout.fragment_recipe, container, false);
+        ButterKnife.inject(this, recipeView);
 
         Bundle args = getArguments();
         Recipe r = (Recipe) args.getSerializable("recipe");
 
-        Button readAsTTSButton = (Button) recipeView.findViewById(R.id.recipe_frag_btn_read_ingrs);
         readAsTTSButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,15 +70,13 @@ public class RecipeFragment extends Fragment {
             }
         });
 
-        TextView titleView = (TextView) recipeView.findViewById(R.id.recipe_frag_title);
-        TextView addedAt = (TextView) recipeView.findViewById(R.id.recipe_frag_added_at);
+
 
         titleView.setText(r.getRecipe_name());
         DateFormat df = DateFormat.getDateInstance();
         addedAt.setText(String.format(this.getString(R.string.added_text_format), df.format(new Date(r.getAdded_at()))));
 
 
-        ImageView defaultImageView = (ImageView) recipeView.findViewById(R.id.recipe_frag_cv_header_image);
 
         Animation fadeInAnimation = new AlphaAnimation(0, 100);
         fadeInAnimation.setDuration(200);
@@ -75,7 +85,6 @@ public class RecipeFragment extends Fragment {
                 .animateIn(fadeInAnimation)
                 .load(r.getDefault_image_url());
 
-        TextView directionsText = (TextView) recipeView.findViewById(R.id.recipe_frag_directions_text);
 
         Step[] steps = r.getSteps().toArray(new Step[0]);
         Arrays.sort(steps, new Comparator<Step>() {

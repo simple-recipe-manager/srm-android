@@ -1,5 +1,6 @@
 package org.bdawg.simplerecipemanager.activity;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.res.Configuration;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +19,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.R;
 import org.bdawg.simplerecipemanager.fragments.RecipeFragment;
@@ -86,8 +90,6 @@ public class MainActivity extends AbstractMetricsActivity {
         if (savedInstanceState == null) {
             selectItem(0);
         }
-
-
 
     }
 
@@ -162,9 +164,6 @@ public class MainActivity extends AbstractMetricsActivity {
 
         private static final String TAG = PlaceholderFragment.class.getName();
 
-        public PlaceholderFragment() {
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -173,26 +172,15 @@ public class MainActivity extends AbstractMetricsActivity {
             Button b = (Button) rootView.findViewById(R.id.button);
             final TextView tv = (TextView) rootView.findViewById(R.id.edit_text_recipe_id);
             tv.setText("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d");
-            final RecipesApi api = new RecipesApi();
+            final RecipesApi api = new RecipesApi(PlaceholderFragment.this.getActivity());
 
             b.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    AsyncTask<String, Void, Recipe> fetchTask = new AsyncTask<String, Void, Recipe>() {
-                        @Override
-                        protected Recipe doInBackground(String... params) {
-                            try {
-                                Recipe recipe = api.recipesGet(params[0], PlaceholderFragment.this.getActivity());
-                                return recipe;
-                            } catch (ApiException|InterruptedException|ExecutionException e) {
-                                e.printStackTrace();
-                                return null;
-                            }
-                        }
-                    };
+                public void onClick(final View view) {
+
                     try {
-                        AsyncTask<String, Void, Recipe> result = fetchTask.execute(tv.getText().toString());
-                        Recipe fetched = result.get();
+                        Recipe fetched =  api.recipesGet(tv.getText().toString(), PlaceholderFragment.this);
+
                         Bundle toPass = new Bundle();
                         toPass.putSerializable("recipe", fetched);
                         Fragment recipeFragment = new RecipeFragment();
