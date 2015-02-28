@@ -1,24 +1,47 @@
 package org.bdawg.simplerecipemanager.activity;
 
+import android.animation.AnimatorSet;
 import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.amazon.identity.auth.device.AuthError;
 import com.amazon.identity.auth.device.authorization.api.AmazonAuthorizationManager;
 import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
 import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
+import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.R;
+import org.bdawg.simplerecipemanager.utils.ImageUtils;
 
+import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
  * Created by breland on 2/24/15.
  */
-public class LoginActivity extends Activity {
-    @InjectView(R.id.login_withAmazonButton) Button loginWithAmazonButton;
+public class LoginActivity extends AbstractMetricsActivity {
+    @InjectView(R.id.sign_in_layout_holder)
+    RelativeLayout signInLayout;
+    @InjectView(R.id.login_background_image_view)
+    ImageView loginBackground;
+    @InjectView(R.id.sign_in_guest_text)
+    TextView signInGuest;
 
 
     private AmazonAuthorizationManager mAmazonAuthManager;
@@ -26,8 +49,58 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
+        this.setContentView(R.layout.activity_login);
+        ButterKnife.inject(this);
+        getActionBar().hide();
 
+        AsyncTask<Void, Void, Void> betterBackground = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int width = size.x;
+                int height = size.y;
+                final Bitmap scaled = ImageUtils.decodeSampledBitmapFromResource(getResources(), R.drawable.whiskly_login_app_background_6, width, height);
+                loginBackground.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        loginBackground.setImageBitmap(scaled);
+                    }
+                });
+
+                return null;
+            }
+        };
+        //betterBackground.execute();
+
+        long duration = 800;
+        final AlphaAnimation hideAnimation = new AlphaAnimation(1.0f, 0.0f);
+
+        TranslateAnimation translateAnimation = new TranslateAnimation(
+                TranslateAnimation.ABSOLUTE, 0f,
+                TranslateAnimation.ABSOLUTE, 0f,
+                TranslateAnimation.RELATIVE_TO_PARENT, 0f,
+                TranslateAnimation.RELATIVE_TO_PARENT, -0.3f);
+
+        final AnimationSet set = new AnimationSet(true);
+        set.addAnimation(hideAnimation);
+        set.addAnimation(translateAnimation);
+        set.setDuration(duration);
+        set.setFillAfter(true);
+
+
+        signInLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInLayout.startAnimation(set);
+                signInLayout.setOnClickListener(null);
+                signInGuest.startAnimation(hideAnimation);
+                signInGuest.setOnClickListener(null);
+            }
+        });
+//        mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
+/*
         loginWithAmazonButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,6 +109,7 @@ public class LoginActivity extends Activity {
                         Bundle.EMPTY, new AuthorizeListener());
             }
         });
+        */
     }
 
     private class AuthorizeListener implements AuthorizationListener {
@@ -52,5 +126,10 @@ public class LoginActivity extends Activity {
         @Override
         public void onCancel(Bundle cause) {
         }
+    }
+
+    private String uriForResrouceId(int resId){
+        Resources resources = this.getResources();
+        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(resId) + '/' + resources.getResourceTypeName(resId) + '/' + resources.getResourceEntryName(resId)).toString();
     }
 }

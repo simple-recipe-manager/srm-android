@@ -20,4 +20,7 @@
     <string name="button_get_text">Fetch</string>
 
     <string name="recipe_frag_read_ingrs_text">Voice Thing</string>
+
+    <string name="sign_in_guest_text">sign in as guest</string>
+    <string name="sign_in_button_text">sign in</string>
 </resources>

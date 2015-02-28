@@ -3,6 +3,7 @@ package org.bdawg.simplerecipemanager.activity;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,12 +30,15 @@ import org.bdawg.simplerecipemanager.fragments.RecipeFragment;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import ly.whisk.api.RecipesApi;
 import ly.whisk.api.client.ApiException;
 import ly.whisk.model.Recipe;
 
 
 public class MainActivity extends AbstractMetricsActivity {
+
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -50,6 +54,7 @@ public class MainActivity extends AbstractMetricsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.inject(this);
 
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -90,7 +95,6 @@ public class MainActivity extends AbstractMetricsActivity {
         if (savedInstanceState == null) {
             selectItem(0);
         }
-
 
     }
 
@@ -164,23 +168,26 @@ public class MainActivity extends AbstractMetricsActivity {
     public static class PlaceholderFragment extends Fragment {
 
         private static final String TAG = PlaceholderFragment.class.getName();
+        @InjectView(R.id.login) Button loginButton;
+        @InjectView(R.id.button) Button fetchButton;
+        @InjectView(R.id.edit_text_recipe_id) TextView recipeIdTextView;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             Bundle args = getArguments();
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            Button b = (Button) rootView.findViewById(R.id.button);
-            final TextView tv = (TextView) rootView.findViewById(R.id.edit_text_recipe_id);
-            tv.setText("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d");
+            ButterKnife.inject(this, rootView);
+
+            recipeIdTextView.setText("5fe8eb02-a05b-401c-91f0-7f8a4e6b984d");
             final RecipesApi api = new RecipesApi(PlaceholderFragment.this.getActivity());
 
-            b.setOnClickListener(new View.OnClickListener() {
+            fetchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(final View view) {
 
                     try {
-                        Recipe fetched =  api.recipesGet(tv.getText().toString(), PlaceholderFragment.this);
+                        Recipe fetched =  api.recipesGet(recipeIdTextView.getText().toString(), PlaceholderFragment.this);
 
                         Bundle toPass = new Bundle();
                         toPass.putSerializable("recipe", fetched);
@@ -194,6 +201,13 @@ public class MainActivity extends AbstractMetricsActivity {
                         e.printStackTrace();
                     }
 
+                }
+            });
+
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(PlaceholderFragment.this.getActivity(), LoginActivity.class));
                 }
             });
             return rootView;
