@@ -28,6 +28,7 @@ import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.R;
 import org.bdawg.simplerecipemanager.utils.ImageUtils;
+import org.bdawg.simplerecipemanager.views.TransparentButton;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -35,13 +36,14 @@ import butterknife.InjectView;
 /**
  * Created by breland on 2/24/15.
  */
-public class LoginActivity extends AbstractMetricsActivity {
-    @InjectView(R.id.sign_in_layout_holder)
-    RelativeLayout signInLayout;
+public class LoginActivity extends Activity {
+    @InjectView(R.id.sign_in_button)
+    TransparentButton signInLayout;
     @InjectView(R.id.login_background_image_view)
     ImageView loginBackground;
     @InjectView(R.id.sign_in_guest_text)
     TextView signInGuest;
+    @InjectView(R.id.sign_in_holder) RelativeLayout signInHolder;
 
 
     private AmazonAuthorizationManager mAmazonAuthManager;
@@ -74,8 +76,10 @@ public class LoginActivity extends AbstractMetricsActivity {
         };
         //betterBackground.execute();
 
-        long duration = 800;
+        final long duration = 800;
         final AlphaAnimation hideAnimation = new AlphaAnimation(1.0f, 0.0f);
+        final AlphaAnimation showAnimation = new AlphaAnimation(0.0f, 1.0f);
+        showAnimation.setFillAfter(true);
 
         TranslateAnimation translateAnimation = new TranslateAnimation(
                 TranslateAnimation.ABSOLUTE, 0f,
@@ -89,7 +93,6 @@ public class LoginActivity extends AbstractMetricsActivity {
         set.setDuration(duration);
         set.setFillAfter(true);
 
-
         signInLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +100,9 @@ public class LoginActivity extends AbstractMetricsActivity {
                 signInLayout.setOnClickListener(null);
                 signInGuest.startAnimation(hideAnimation);
                 signInGuest.setOnClickListener(null);
+                signInHolder.setAlpha(0.0f);
+                signInHolder.setVisibility(View.VISIBLE);
+                signInHolder.animate().alpha(1f).setListener(null).setDuration(duration-100).setStartDelay(100).start();
             }
         });
 //        mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);

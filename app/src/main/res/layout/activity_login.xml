@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ImageView
         android:layout_width="match_parent"
@@ -28,56 +29,55 @@
         />
 
 
-    <RelativeLayout
+    <org.bdawg.simplerecipemanager.views.TransparentButton
         android:layout_width="300dp"
         android:layout_height="50dp"
+        android:id="@+id/sign_in_button"
         android:layout_above="@+id/sign_in_guest_text"
-        android:background="@drawable/layout_round_corners"
         android:layout_centerHorizontal="true"
-        android:id="@+id/sign_in_layout_holder"
-        android:layout_marginBottom="15dp"
-        android:layerType="hardware">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_add_person"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:id="@+id/icn_sign_in"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="6dp"
-            android:alpha=".7"
+        app:text="@string/sign_in_button_text"
+        app:icon="@drawable/ic_action_add_person"
+        />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/sign_in_holder"
+        android:visibility="invisible"
+
+        >
+
+        <org.bdawg.simplerecipemanager.views.TransparentButton
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:id="@+id/button_amazon_signin"
+            app:text="@string/amazon_signin"
+            app:icon="@drawable/btnlwa_drkgry_a"
+            android:layout_above="@+id/button_google_signin"
+
             />
 
-        <View
-            android:layout_toRightOf="@+id/icn_sign_in"
-            android:layout_width="1dp"
-            android:layout_height="match_parent"
-            android:background="#80FFFFFF"
-            android:id="@+id/divider"
-            android:layout_marginRight="5dp"
-            android:layout_marginLeft="5dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:id="@+id/sign_in_picker"
-            android:text="@string/sign_in_button_text"
-            android:layout_toRightOf="@+id/divider"
-            android:layout_alignBottom="@+id/icn_sign_in"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="25sp"
+        <org.bdawg.simplerecipemanager.views.TransparentButton
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:id="@+id/button_google_signin"
+            app:text="@string/amazon_signin"
+            app:icon="@drawable/btnlwa_drkgry_a"
+            android:layout_above="@+id/button_facebook_signin"
             />
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentRight="true"
-            android:src="@android:drawable/arrow_down_float"
-            android:layout_marginRight="10dp"/>
-    </RelativeLayout>
+        <org.bdawg.simplerecipemanager.views.TransparentButton
+            android:layout_width="300dp"
+            android:layout_height="50dp"
+            android:id="@+id/button_facebook_signin"
+            app:text="@string/amazon_signin"
+            app:icon="@drawable/btnlwa_drkgry_a"
+            android:layout_alignParentBottom="true"
+            />
+
+        </RelativeLayout>
 
     <TextView
         android:layout_width="wrap_content"
