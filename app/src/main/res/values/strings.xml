@@ -24,4 +24,8 @@
     <string name="sign_in_guest_text">sign in as guest</string>
     <string name="sign_in_button_text">sign in</string>
     <string name="amazon_signin">sign in with amazon</string>
+    <string name="google_signin">sign in with google</string>
+    <string name="facebook_signin">sign in with facebook</string>
+
+
 </resources>

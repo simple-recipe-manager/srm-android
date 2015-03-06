@@ -17,6 +17,8 @@
         android:layout_marginRight="6dp"
         android:scaleType="fitCenter"
         android:alpha=".7"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
         />
 
     <View
@@ -30,11 +32,10 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:id="@+id/txt"
         android:layout_toRightOf="@+id/divider"
-        android:layout_alignBottom="@+id/icn_left"
         android:textColor="@android:color/darker_gray"
         android:textSize="22sp"
         android:paddingLeft="5dp"

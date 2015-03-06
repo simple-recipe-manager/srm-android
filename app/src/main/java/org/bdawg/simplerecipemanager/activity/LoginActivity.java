@@ -85,7 +85,7 @@ public class LoginActivity extends AbstractMetricsActivity {
                 return null;
             }
         };
-        //betterBackground.execute();
+        betterBackground.execute();
 
         final long duration = 800;
         final AlphaAnimation hideAnimation = new AlphaAnimation(1.0f, 0.0f);
