@@ -31,7 +31,7 @@
 
     <org.bdawg.simplerecipemanager.views.TransparentButton
         android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:id="@+id/sign_in_button"
         android:layout_above="@+id/sign_in_guest_text"
         android:layout_centerHorizontal="true"
@@ -46,12 +46,13 @@
         android:layout_centerHorizontal="true"
         android:id="@+id/sign_in_holder"
         android:visibility="invisible"
+        android:paddingBottom="15dp"
 
         >
 
         <org.bdawg.simplerecipemanager.views.TransparentButton
             android:layout_width="300dp"
-            android:layout_height="50dp"
+            android:layout_height="70dp"
             android:id="@+id/button_amazon_signin"
             app:text="@string/amazon_signin"
             app:icon="@drawable/btnlwa_drkgry_a"
@@ -61,7 +62,7 @@
 
         <org.bdawg.simplerecipemanager.views.TransparentButton
             android:layout_width="300dp"
-            android:layout_height="50dp"
+            android:layout_height="70dp"
             android:id="@+id/button_google_signin"
             app:text="@string/amazon_signin"
             app:icon="@drawable/btnlwa_drkgry_a"
@@ -70,7 +71,7 @@
 
         <org.bdawg.simplerecipemanager.views.TransparentButton
             android:layout_width="300dp"
-            android:layout_height="50dp"
+            android:layout_height="70dp"
             android:id="@+id/button_facebook_signin"
             app:text="@string/amazon_signin"
             app:icon="@drawable/btnlwa_drkgry_a"

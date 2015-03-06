@@ -24,7 +24,7 @@
                 <!-- android:host must use the full package name
                     found in Manifest General Attributes -->
                 <data
-                    android:host="com.example.app"
+                    android:host="org.bdawg.simplerecipemanager"
                     android:scheme="amzn" />
             </intent-filter>
         </activity>

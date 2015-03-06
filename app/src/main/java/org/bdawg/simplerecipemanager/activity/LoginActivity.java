@@ -3,12 +3,14 @@ package org.bdawg.simplerecipemanager.activity;
 import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
@@ -30,20 +32,26 @@ import org.bdawg.simplerecipemanager.R;
 import org.bdawg.simplerecipemanager.utils.ImageUtils;
 import org.bdawg.simplerecipemanager.views.TransparentButton;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 
 /**
  * Created by breland on 2/24/15.
  */
-public class LoginActivity extends Activity {
-    @InjectView(R.id.sign_in_button)
-    TransparentButton signInLayout;
-    @InjectView(R.id.login_background_image_view)
-    ImageView loginBackground;
-    @InjectView(R.id.sign_in_guest_text)
-    TextView signInGuest;
+public class LoginActivity extends AbstractMetricsActivity {
+
+    private static final String TAG = LoginActivity.class.getName();
+
+    @InjectView(R.id.sign_in_button) TransparentButton signInLayout;
+    @InjectView(R.id.login_background_image_view) ImageView loginBackground;
+    @InjectView(R.id.sign_in_guest_text) TextView signInGuest;
     @InjectView(R.id.sign_in_holder) RelativeLayout signInHolder;
+    @InjectView(R.id.button_amazon_signin) TransparentButton amazonSignIn;
+    @InjectView(R.id.button_facebook_signin) TransparentButton facebookSignIn;
+    @InjectView(R.id.button_google_signin) TransparentButton googleSignIn;
 
 
     private AmazonAuthorizationManager mAmazonAuthManager;
@@ -51,6 +59,9 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (this.cognitoIsAuthorized()){
+            this.startActivity(new Intent(this, MainActivity.class));
+        }
         this.setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
         getActionBar().hide();
@@ -105,17 +116,29 @@ public class LoginActivity extends Activity {
                 signInHolder.animate().alpha(1f).setListener(null).setDuration(duration-100).setStartDelay(100).start();
             }
         });
-//        mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
-/*
-        loginWithAmazonButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAmazonAuthManager.authorize(
-                        new String []{"profile","postal_code"},
-                        Bundle.EMPTY, new AuthorizeListener());
-            }
-        });
-        */
+      try {
+          mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
+      } catch (IllegalArgumentException badAPIKey){
+          Log.e(TAG, "Bad API key, this is weird.");
+      }
+
+        if (mAmazonAuthManager != null) {
+            amazonSignIn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mAmazonAuthManager.authorize(
+                            new String[]{"profile", "postal_code"},
+                            Bundle.EMPTY, new AuthorizeListener());
+                }
+            });
+        } else {
+            amazonSignIn.setEnabled(false);
+        }
+
+    }
+
+    private boolean cognitoIsAuthorized(){
+        return this.getCognitoProvider().getLogins() != null && this.getCognitoProvider().getLogins().size() > 0;
     }
 
     private class AuthorizeListener implements AuthorizationListener {
@@ -123,6 +146,16 @@ public class LoginActivity extends Activity {
         /* Authorization was completed successfully. */
         @Override
         public void onSuccess(Bundle response) {
+            String token = response.getString(AuthzConstants.BUNDLE_KEY.TOKEN.val);
+            Map<String, String> logins = LoginActivity.this.getCognitoProvider().getLogins();
+            if (logins == null){
+                logins = new HashMap<String, String>();
+            }
+            logins.put("www.amazon.com", token);
+            LoginActivity.this.getCognitoProvider().withLogins(logins);
+            if (cognitoIsAuthorized()){
+                LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            }
         }
         /* There was an error during the attempt to authorize the application. */
         @Override

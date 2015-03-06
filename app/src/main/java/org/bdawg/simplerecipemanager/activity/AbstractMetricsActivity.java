@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.auth.CognitoCredentialsProvider;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.AnalyticsConfig;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
@@ -18,10 +19,12 @@ public abstract class AbstractMetricsActivity extends Activity {
     private static final String TAG = AbstractMetricsActivity.class.getSimpleName();
     private static MobileAnalyticsManager analytics;
 
+    private CognitoCredentialsProvider cognitoProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CognitoCachingCredentialsProvider cognitoProvider = new CognitoCachingCredentialsProvider(
+        cognitoProvider = new CognitoCachingCredentialsProvider(
                 this.getApplicationContext(),
                 "224842466274",
                 "us-east-1:866d80cc-24e2-4c83-b6b4-f1c722310e23",
@@ -42,6 +45,10 @@ public abstract class AbstractMetricsActivity extends Activity {
         } catch (InitializationException ex)         {
             Log.e(TAG, "Failed to setup cognito/analytics", ex);
         }
+    }
+
+    public CognitoCredentialsProvider getCognitoProvider(){
+        return this.cognitoProvider;
     }
 
     @Override

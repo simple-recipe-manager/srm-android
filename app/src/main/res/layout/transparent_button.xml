@@ -2,19 +2,20 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="300dp"
-    android:layout_height="50dp"
+    android:layout_height="70dp"
     android:background="@drawable/layout_round_corners"
     android:layout_centerHorizontal="true"
     android:layout_marginBottom="15dp"
     android:layerType="hardware">
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:id="@+id/icn_left"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="6dp"
+        android:scaleType="fitCenter"
         android:alpha=".7"
         />
 
@@ -29,12 +30,13 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:id="@+id/txt"
         android:layout_toRightOf="@+id/divider"
         android:layout_alignBottom="@+id/icn_left"
         android:textColor="@android:color/darker_gray"
-        android:textSize="25sp"
+        android:textSize="22sp"
+        android:paddingLeft="5dp"
         />
 </RelativeLayout>
