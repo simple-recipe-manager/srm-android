@@ -6,15 +6,20 @@ import android.util.Log;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.auth.CognitoCredentialsProvider;
+import com.amazonaws.auth.IdentityChangedListener;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.AnalyticsConfig;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.amazonaws.regions.Regions;
 
+import org.bdawg.simplerecipemanager.models.BaseUser;
+
+import java.util.Map;
+
 /**
  * Created by breland on 1/31/2015.
  */
-public abstract class AbstractMetricsActivity extends Activity {
+public abstract class AbstractMetricsActivity extends BaseActivity implements IdentityChangedListener {
 
     private static final String TAG = AbstractMetricsActivity.class.getSimpleName();
     private static MobileAnalyticsManager analytics;
@@ -26,12 +31,10 @@ public abstract class AbstractMetricsActivity extends Activity {
         super.onCreate(savedInstanceState);
         cognitoProvider = new CognitoCachingCredentialsProvider(
                 this.getApplicationContext(),
-                "224842466274",
                 "us-east-1:866d80cc-24e2-4c83-b6b4-f1c722310e23",
-                "arn:aws:iam::224842466274:role/Cognito_SimpleRecipeManagerUnauth_DefaultRole",
-                "arn:aws:iam::224842466274:role/Cognito_SimpleRecipeManagerAuth_DefaultRole",
                 Regions.US_EAST_1
         );
+        cognitoProvider.registerIdentityChangedListener(this);
 
         try {
             AnalyticsConfig config = new AnalyticsConfig();
@@ -47,8 +50,22 @@ public abstract class AbstractMetricsActivity extends Activity {
         }
     }
 
+    //TODO: This
+    @Override
+    public void identityChanged(String oldIdentity, String newIdentity) {
+
+    }
+
     public CognitoCredentialsProvider getCognitoProvider(){
         return this.cognitoProvider;
+    }
+
+    public void addCognitoCredentials(Map<String, String> tokens){
+        this.cognitoProvider.setLogins(tokens);
+        this.cognitoProvider.refresh();
+        BaseUser newUser = new BaseUser();
+        newUser.setId(this.cognitoProvider.getIdentityId());
+        this.setUser(newUser);
     }
 
     @Override

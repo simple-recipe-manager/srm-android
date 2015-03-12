@@ -26,24 +26,30 @@ import com.amazon.identity.auth.device.AuthError;
 import com.amazon.identity.auth.device.authorization.api.AmazonAuthorizationManager;
 import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
 import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
+import com.amazon.identity.auth.device.shared.APIListener;
 import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.R;
+import org.bdawg.simplerecipemanager.models.BaseUser;
 import org.bdawg.simplerecipemanager.utils.ImageUtils;
 import org.bdawg.simplerecipemanager.views.TransparentButton;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import butterknife.OnClick;
 
 /**
  * Created by breland on 2/24/15.
  */
-public class LoginActivity extends AbstractMetricsActivity {
+public class LoginActivity extends AbstractMetricsActivity implements AuthorizationListener, APIListener{
 
     private static final String TAG = LoginActivity.class.getName();
+    private static final String[] AMAZON_AUTH_REALMS = {"profile", "postal_code"};
 
     @InjectView(R.id.sign_in_button) TransparentButton signInLayout;
     @InjectView(R.id.login_background_image_view) ImageView loginBackground;
@@ -59,8 +65,13 @@ public class LoginActivity extends AbstractMetricsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (this.cognitoIsAuthorized()){
-            this.startActivity(new Intent(this, MainActivity.class));
+        if (this.cognitoIsAuthorized() || (this.getPrefrences().isGuestMode() != null && this.getPrefrences().isGuestMode())){
+            if (this.getPrefrences().isGuestMode() != null && this.getPrefrences().isGuestMode().booleanValue()){
+                BaseUser b = new BaseUser();
+                b.setId(this.getCognitoProvider().getIdentityId());
+                this.setUser(b);
+            }
+            launchMainActivity();
         }
         this.setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
@@ -118,6 +129,7 @@ public class LoginActivity extends AbstractMetricsActivity {
         });
       try {
           mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
+          mAmazonAuthManager.getProfile(this);
       } catch (IllegalArgumentException badAPIKey){
           Log.e(TAG, "Bad API key, this is weird.");
       }
@@ -127,8 +139,8 @@ public class LoginActivity extends AbstractMetricsActivity {
                 @Override
                 public void onClick(View v) {
                     mAmazonAuthManager.authorize(
-                            new String[]{"profile", "postal_code"},
-                            Bundle.EMPTY, new AuthorizeListener());
+                            AMAZON_AUTH_REALMS,
+                            Bundle.EMPTY, LoginActivity.this);
                 }
             });
         } else {
@@ -141,30 +153,60 @@ public class LoginActivity extends AbstractMetricsActivity {
         return this.getCognitoProvider().getLogins() != null && this.getCognitoProvider().getLogins().size() > 0;
     }
 
-    private class AuthorizeListener implements AuthorizationListener {
+    @Override
+    public void onCancel(Bundle bundle) {
 
-        /* Authorization was completed successfully. */
-        @Override
-        public void onSuccess(Bundle response) {
-            String token = response.getString(AuthzConstants.BUNDLE_KEY.TOKEN.val);
-            Map<String, String> logins = LoginActivity.this.getCognitoProvider().getLogins();
-            if (logins == null){
-                logins = new HashMap<String, String>();
-            }
-            logins.put("www.amazon.com", token);
-            LoginActivity.this.getCognitoProvider().withLogins(logins);
-            if (cognitoIsAuthorized()){
-                LoginActivity.this.startActivity(new Intent(LoginActivity.this, MainActivity.class));
-            }
+
+    }
+
+    @OnClick({R.id.sign_in_guest_text})
+    public void signInAsGuestClicked(){
+        this.getPrefrences().setGuestMode(true);
+        BaseUser b = new BaseUser();
+        b.setId(this.getCognitoProvider().getIdentityId());
+        this.setUser(b);
+    }
+
+    @Override
+    public void onSuccess(Bundle bundle) {
+        Future<Bundle> profileBundleFuture = this.mAmazonAuthManager.getProfile(null);
+        String token = bundle.getString(AuthzConstants.BUNDLE_KEY.TOKEN.val);
+        for (String s : bundle.keySet()){
+            Log.d(TAG, s);
         }
-        /* There was an error during the attempt to authorize the application. */
-        @Override
-        public void onError(AuthError ae) {
+        Bundle profileBundle = null;
+        try {
+            profileBundle = profileBundleFuture.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
-        /* Authorization was cancelled before it could be completed. */
-        @Override
-        public void onCancel(Bundle cause) {
+        String name = profileBundle.getString(AuthzConstants.PROFILE_KEY.NAME.val);
+        String postal = profileBundle.getString(AuthzConstants.PROFILE_KEY.POSTAL_CODE.val);
+        Map<String, String> logins = LoginActivity.this.getCognitoProvider().getLogins();
+        if (logins == null){
+            logins = new HashMap<String, String>();
         }
+        logins.put("www.amazon.com", token);
+        LoginActivity.this.addCognitoCredentials(logins);
+        this.getUser().setName(name);
+        this.getUser().setPostalCode(postal);
+        if (cognitoIsAuthorized()){
+            launchMainActivity();
+        }
+    }
+
+    public void launchMainActivity(){
+        Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
+        Bundle extras = new Bundle();
+        extras.putSerializable(BaseUser.USER_EXTRA_KEY, this.getUser());
+        LoginActivity.this.startActivity(mainIntent,extras);
+    }
+
+    @Override
+    public void onError(AuthError authError) {
+
     }
 
     private String uriForResrouceId(int resId){
