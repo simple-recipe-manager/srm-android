@@ -1,6 +1,5 @@
 package org.bdawg.simplerecipemanager.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -12,16 +11,17 @@ import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationExcept
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
 import com.amazonaws.regions.Regions;
 
-import org.bdawg.simplerecipemanager.models.BaseUser;
 
 import java.util.Map;
+
+import ly.whisk.model.BaseUser;
 
 /**
  * Created by breland on 1/31/2015.
  */
-public abstract class AbstractMetricsActivity extends BaseActivity implements IdentityChangedListener {
+public abstract class AbstractCognitoActivityWithMetrics extends BaseActivity implements IdentityChangedListener {
 
-    private static final String TAG = AbstractMetricsActivity.class.getSimpleName();
+    private static final String TAG = AbstractCognitoActivityWithMetrics.class.getSimpleName();
     private static MobileAnalyticsManager analytics;
 
     private CognitoCredentialsProvider cognitoProvider;
@@ -45,7 +45,7 @@ public abstract class AbstractMetricsActivity extends BaseActivity implements Id
                     Regions.US_EAST_1,
                     cognitoProvider,
                     config);
-        } catch (InitializationException ex)         {
+        } catch (InitializationException ex) {
             Log.e(TAG, "Failed to setup cognito/analytics", ex);
         }
     }
@@ -56,16 +56,22 @@ public abstract class AbstractMetricsActivity extends BaseActivity implements Id
 
     }
 
-    public CognitoCredentialsProvider getCognitoProvider(){
+    public CognitoCredentialsProvider getCognitoProvider() {
         return this.cognitoProvider;
     }
 
-    public void addCognitoCredentials(Map<String, String> tokens){
+    public void addCognitoCredentials(Map<String, String> tokens) {
         this.cognitoProvider.setLogins(tokens);
         this.cognitoProvider.refresh();
-        BaseUser newUser = new BaseUser();
-        newUser.setId(this.cognitoProvider.getIdentityId());
-        this.setUser(newUser);
+        if (this.getUser() == null) {
+            BaseUser newUser = new BaseUser();
+            this.setUser(newUser);
+        }
+        this.getUser().setId(this.cognitoProvider.getIdentityId());
+    }
+
+    public boolean cognitoIsAuthorizedWithLogins() {
+        return this.getCognitoProvider().getLogins() != null && this.getCognitoProvider().getLogins().size() > 0;
     }
 
     @Override

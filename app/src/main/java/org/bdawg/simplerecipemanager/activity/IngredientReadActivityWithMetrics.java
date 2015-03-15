@@ -3,14 +3,11 @@ package org.bdawg.simplerecipemanager.activity;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 
-
 import org.bdawg.simplerecipemanager.utils.Rational;
 import org.bdawg.simplerecipemanager.utils.TagHelper;
-import org.bdawg.simplerecipemanager.views.IngredientView;
 
 import java.util.Collection;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -20,7 +17,7 @@ import ly.whisk.model.Recipe;
 /**
  * Created by breland on 1/31/2015.
  */
-public class IngredientReadActivity extends AbstractMetricsActivity implements TextToSpeech.OnInitListener {
+public class IngredientReadActivityWithMetrics extends AbstractCognitoActivityWithMetrics implements TextToSpeech.OnInitListener {
 
     private Recipe recipe;
     private TextToSpeech ttsEngine;

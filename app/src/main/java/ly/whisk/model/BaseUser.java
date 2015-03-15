@@ -1,13 +1,21 @@
-package org.bdawg.simplerecipemanager.models;
+package ly.whisk.model;
 
-import java.io.Serializable;
+import org.parceler.Parcel;
 
 /**
- * Created by breland on 2/24/15.
+ * Created by breland on 3/15/15.
  */
-public class BaseUser implements Serializable{
+@Parcel
+public class BaseUser {
 
     public static String USER_EXTRA_KEY = "USER";
+    String id;
+    String name;
+    String postalCode;
+
+    public BaseUser() {
+
+    }
 
     public String getId() {
         return id;
@@ -16,10 +24,6 @@ public class BaseUser implements Serializable{
     public void setId(String id) {
         this.id = id;
     }
-
-    private String id;
-    private String name;
-    private String postalCode;
 
     public String getName() {
         return name;

@@ -14,22 +14,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-
 import com.koushikdutta.ion.Ion;
 
+import org.bdawg.simplerecipemanager.R;
+import org.bdawg.simplerecipemanager.activity.IngredientReadActivityWithMetrics;
+import org.bdawg.simplerecipemanager.utils.Rational;
 import org.bdawg.simplerecipemanager.utils.TagHelper;
 import org.bdawg.simplerecipemanager.views.IngredientView;
-import org.bdawg.simplerecipemanager.R;
-import org.bdawg.simplerecipemanager.activity.IngredientReadActivity;
-
-import org.bdawg.simplerecipemanager.utils.Rational;
 
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -42,12 +39,16 @@ import ly.whisk.model.Step;
  */
 public class RecipeFragment extends Fragment {
 
-    @InjectView(R.id.recipe_frag_btn_read_ingrs) Button readAsTTSButton;
-    @InjectView(R.id.recipe_frag_title) TextView titleView;
-    @InjectView(R.id.recipe_frag_added_at) TextView addedAt;
-    @InjectView(R.id.recipe_frag_cv_header_image) ImageView defaultImageView;
-    @InjectView(R.id.recipe_frag_directions_text) TextView directionsText;
-
+    @InjectView(R.id.recipe_frag_btn_read_ingrs)
+    Button readAsTTSButton;
+    @InjectView(R.id.recipe_frag_title)
+    TextView titleView;
+    @InjectView(R.id.recipe_frag_added_at)
+    TextView addedAt;
+    @InjectView(R.id.recipe_frag_cv_header_image)
+    ImageView defaultImageView;
+    @InjectView(R.id.recipe_frag_directions_text)
+    TextView directionsText;
 
 
     @Override
@@ -64,18 +65,16 @@ public class RecipeFragment extends Fragment {
         readAsTTSButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent recipeTTSIntent = new Intent(RecipeFragment.this.getActivity(), IngredientReadActivity.class);
+                Intent recipeTTSIntent = new Intent(RecipeFragment.this.getActivity(), IngredientReadActivityWithMetrics.class);
                 recipeTTSIntent.putExtras(getArguments());
                 RecipeFragment.this.startActivity(recipeTTSIntent);
             }
         });
 
 
-
         titleView.setText(r.getRecipe_name());
         DateFormat df = DateFormat.getDateInstance();
         addedAt.setText(String.format(this.getString(R.string.added_text_format), df.format(new Date(r.getAdded_at()))));
-
 
 
         Animation fadeInAnimation = new AlphaAnimation(0, 100);

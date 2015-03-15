@@ -1,16 +1,13 @@
 package org.bdawg.simplerecipemanager.activity;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,26 +18,21 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.koushikdutta.ion.Ion;
-
 import org.bdawg.simplerecipemanager.R;
 import org.bdawg.simplerecipemanager.fragments.RecipeFragment;
 
-
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import ly.whisk.api.RecipesApi;
-import ly.whisk.api.client.ApiException;
 import ly.whisk.model.Recipe;
 
 
-public class MainActivity extends AbstractMetricsActivity {
+public class MainActivityWithMetrics extends AbstractCognitoActivityWithMetrics {
 
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivityWithMetrics.class.getSimpleName();
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -168,9 +160,12 @@ public class MainActivity extends AbstractMetricsActivity {
     public static class PlaceholderFragment extends Fragment {
 
         private static final String TAG = PlaceholderFragment.class.getName();
-        @InjectView(R.id.login) Button loginButton;
-        @InjectView(R.id.button) Button fetchButton;
-        @InjectView(R.id.edit_text_recipe_id) TextView recipeIdTextView;
+        @InjectView(R.id.login)
+        Button loginButton;
+        @InjectView(R.id.button)
+        Button fetchButton;
+        @InjectView(R.id.edit_text_recipe_id)
+        TextView recipeIdTextView;
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -187,7 +182,7 @@ public class MainActivity extends AbstractMetricsActivity {
                 public void onClick(final View view) {
 
                     try {
-                        Recipe fetched =  api.recipesGet(recipeIdTextView.getText().toString(), PlaceholderFragment.this);
+                        Recipe fetched = api.recipesGet(recipeIdTextView.getText().toString(), PlaceholderFragment.this);
 
                         Bundle toPass = new Bundle();
                         toPass.putSerializable("recipe", fetched);
@@ -207,7 +202,7 @@ public class MainActivity extends AbstractMetricsActivity {
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(PlaceholderFragment.this.getActivity(), LoginActivity.class));
+                    startActivity(new Intent(PlaceholderFragment.this.getActivity(), LoginActivityWithMetrics.class));
                 }
             });
             return rootView;

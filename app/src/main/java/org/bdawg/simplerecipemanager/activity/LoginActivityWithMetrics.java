@@ -1,23 +1,17 @@
 package org.bdawg.simplerecipemanager.activity;
 
-import android.animation.AnimatorSet;
-import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.TranslateAnimation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -27,52 +21,52 @@ import com.amazon.identity.auth.device.authorization.api.AmazonAuthorizationMana
 import com.amazon.identity.auth.device.authorization.api.AuthorizationListener;
 import com.amazon.identity.auth.device.authorization.api.AuthzConstants;
 import com.amazon.identity.auth.device.shared.APIListener;
-import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.R;
-import org.bdawg.simplerecipemanager.models.BaseUser;
 import org.bdawg.simplerecipemanager.utils.ImageUtils;
 import org.bdawg.simplerecipemanager.views.TransparentButton;
+import org.parceler.Parcels;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import ly.whisk.model.BaseUser;
 
 /**
  * Created by breland on 2/24/15.
  */
-public class LoginActivity extends AbstractMetricsActivity implements AuthorizationListener, APIListener{
+public class LoginActivityWithMetrics extends AbstractCognitoActivityWithMetrics implements AuthorizationListener, APIListener {
 
-    private static final String TAG = LoginActivity.class.getName();
+    private static final String TAG = LoginActivityWithMetrics.class.getName();
     private static final String[] AMAZON_AUTH_REALMS = {"profile", "postal_code"};
+    private static final String AMAZON_KEY = "www.amazon.com";
 
-    @InjectView(R.id.sign_in_button) TransparentButton signInLayout;
-    @InjectView(R.id.login_background_image_view) ImageView loginBackground;
-    @InjectView(R.id.sign_in_guest_text) TextView signInGuest;
-    @InjectView(R.id.sign_in_holder) RelativeLayout signInHolder;
-    @InjectView(R.id.button_amazon_signin) TransparentButton amazonSignIn;
-    @InjectView(R.id.button_facebook_signin) TransparentButton facebookSignIn;
-    @InjectView(R.id.button_google_signin) TransparentButton googleSignIn;
+    @InjectView(R.id.sign_in_button)
+    TransparentButton signInLayout;
+    @InjectView(R.id.login_background_image_view)
+    ImageView loginBackground;
+    @InjectView(R.id.sign_in_guest_text)
+    TextView signInGuest;
+    @InjectView(R.id.sign_in_holder)
+    RelativeLayout signInHolder;
+    @InjectView(R.id.button_amazon_signin)
+    TransparentButton amazonSignIn;
+    @InjectView(R.id.button_facebook_signin)
+    TransparentButton facebookSignIn;
+    @InjectView(R.id.button_google_signin)
+    TransparentButton googleSignIn;
 
-
+    private boolean hasRequestedAmznProfile = false;
+    private boolean hasRequestedAmznToken = true;
     private AmazonAuthorizationManager mAmazonAuthManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (this.cognitoIsAuthorized() || (this.getPrefrences().isGuestMode() != null && this.getPrefrences().isGuestMode())){
-            if (this.getPrefrences().isGuestMode() != null && this.getPrefrences().isGuestMode().booleanValue()){
-                BaseUser b = new BaseUser();
-                b.setId(this.getCognitoProvider().getIdentityId());
-                this.setUser(b);
-            }
-            launchMainActivity();
-        }
         this.setContentView(R.layout.activity_login);
         ButterKnife.inject(this);
         getActionBar().hide();
@@ -124,15 +118,28 @@ public class LoginActivity extends AbstractMetricsActivity implements Authorizat
                 signInGuest.setOnClickListener(null);
                 signInHolder.setAlpha(0.0f);
                 signInHolder.setVisibility(View.VISIBLE);
-                signInHolder.animate().alpha(1f).setListener(null).setDuration(duration-100).setStartDelay(100).start();
+                signInHolder.animate().alpha(1f).setListener(null).setDuration(duration - 100).setStartDelay(100).start();
             }
         });
-      try {
-          mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
-          mAmazonAuthManager.getProfile(this);
-      } catch (IllegalArgumentException badAPIKey){
-          Log.e(TAG, "Bad API key, this is weird.");
-      }
+        Future<Bundle> amznGetTokenFuture = null;
+        try {
+            mAmazonAuthManager = new AmazonAuthorizationManager(this, Bundle.EMPTY);
+            amznGetTokenFuture = mAmazonAuthManager.getToken(AMAZON_AUTH_REALMS, this);
+        } catch (IllegalArgumentException badAPIKey) {
+            Log.e(TAG, "Bad API key, this is weird.");
+        }
+
+        if (this.cognitoIsAuthorizedWithLogins() || (this.getPrefrences().isGuestMode() != null && this.getPrefrences().isGuestMode())) {
+            if (this.getPrefrences().isGuestMode() != null && this.getPrefrences().isGuestMode().booleanValue()) {
+                BaseUser b = new BaseUser();
+                b.setId(this.getCognitoProvider().getIdentityId());
+                this.setUser(b);
+                if (amznGetTokenFuture != null) {
+                    amznGetTokenFuture.cancel(true);
+                }
+            }
+            launchMainActivity();
+        }
 
         if (mAmazonAuthManager != null) {
             amazonSignIn.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +147,7 @@ public class LoginActivity extends AbstractMetricsActivity implements Authorizat
                 public void onClick(View v) {
                     mAmazonAuthManager.authorize(
                             AMAZON_AUTH_REALMS,
-                            Bundle.EMPTY, LoginActivity.this);
+                            Bundle.EMPTY, LoginActivityWithMetrics.this);
                 }
             });
         } else {
@@ -149,68 +156,68 @@ public class LoginActivity extends AbstractMetricsActivity implements Authorizat
 
     }
 
-    private boolean cognitoIsAuthorized(){
-        return this.getCognitoProvider().getLogins() != null && this.getCognitoProvider().getLogins().size() > 0;
+    public void launchMainActivity() {
+        Intent mainIntent = new Intent(LoginActivityWithMetrics.this, MainActivityWithMetrics.class);
+        Bundle extras = new Bundle();
+        extras.putParcelable(BaseUser.USER_EXTRA_KEY, Parcels.wrap(this.getUser()));
+        finish();
+        LoginActivityWithMetrics.this.startActivity(mainIntent, extras);
+
+    }
+
+    @OnClick({R.id.sign_in_guest_text})
+    public void signInAsGuestClicked() {
+        this.getPrefrences().setGuestMode(true);
+        BaseUser b = new BaseUser();
+        b.setId(this.getCognitoProvider().getIdentityId());
+        this.setUser(b);
+        launchMainActivity();
     }
 
     @Override
     public void onCancel(Bundle bundle) {
 
-
-    }
-
-    @OnClick({R.id.sign_in_guest_text})
-    public void signInAsGuestClicked(){
-        this.getPrefrences().setGuestMode(true);
-        BaseUser b = new BaseUser();
-        b.setId(this.getCognitoProvider().getIdentityId());
-        this.setUser(b);
     }
 
     @Override
     public void onSuccess(Bundle bundle) {
-        Future<Bundle> profileBundleFuture = this.mAmazonAuthManager.getProfile(null);
+        if (!bundle.containsKey(AuthzConstants.BUNDLE_KEY.PROFILE.val) && this.getUser().getName() == null && !this.hasRequestedAmznProfile) {
+            this.mAmazonAuthManager.getProfile(this);
+            this.hasRequestedAmznProfile = true;
+        } else {
+            Bundle profileBundle = bundle.getBundle(AuthzConstants.BUNDLE_KEY.PROFILE.val);
+            if (profileBundle != null) {
+                String name = profileBundle.getString(AuthzConstants.PROFILE_KEY.NAME.val);
+                String postal = profileBundle.getString(AuthzConstants.PROFILE_KEY.POSTAL_CODE.val);
+                this.getUser().setName(name);
+                this.getUser().setPostalCode(postal);
+            }
+        }
         String token = bundle.getString(AuthzConstants.BUNDLE_KEY.TOKEN.val);
-        for (String s : bundle.keySet()){
-            Log.d(TAG, s);
+        if (token != null && !this.getCognitoProvider().getLogins().containsKey(AMAZON_KEY)) {
+            Map<String, String> logins = LoginActivityWithMetrics.this.getCognitoProvider().getLogins();
+            if (logins == null) {
+                logins = new HashMap<String, String>();
+            }
+            logins.put(AMAZON_KEY, token);
+            LoginActivityWithMetrics.this.addCognitoCredentials(logins);
+            this.getUser().setId(this.getCognitoProvider().getIdentityId());
+
+        } else if (this.getUser().getId() == null) {
+            this.getUser().setId(this.getCognitoProvider().getIdentityId());
+
+        } else if (!this.hasRequestedAmznToken) {
+            this.hasRequestedAmznToken = true;
+            this.mAmazonAuthManager.getToken(AMAZON_AUTH_REALMS, this);
         }
-        Bundle profileBundle = null;
-        try {
-            profileBundle = profileBundleFuture.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-        String name = profileBundle.getString(AuthzConstants.PROFILE_KEY.NAME.val);
-        String postal = profileBundle.getString(AuthzConstants.PROFILE_KEY.POSTAL_CODE.val);
-        Map<String, String> logins = LoginActivity.this.getCognitoProvider().getLogins();
-        if (logins == null){
-            logins = new HashMap<String, String>();
-        }
-        logins.put("www.amazon.com", token);
-        LoginActivity.this.addCognitoCredentials(logins);
-        this.getUser().setName(name);
-        this.getUser().setPostalCode(postal);
-        if (cognitoIsAuthorized()){
+
+        if (this.getUser().getId() != null && this.getUser().getName() != null && cognitoIsAuthorizedWithLogins()) {
             launchMainActivity();
         }
     }
 
-    public void launchMainActivity(){
-        Intent mainIntent = new Intent(LoginActivity.this, MainActivity.class);
-        Bundle extras = new Bundle();
-        extras.putSerializable(BaseUser.USER_EXTRA_KEY, this.getUser());
-        LoginActivity.this.startActivity(mainIntent,extras);
-    }
-
     @Override
     public void onError(AuthError authError) {
-
-    }
-
-    private String uriForResrouceId(int resId){
-        Resources resources = this.getResources();
-        return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE + "://" + resources.getResourcePackageName(resId) + '/' + resources.getResourceTypeName(resId) + '/' + resources.getResourceEntryName(resId)).toString();
+        Log.e(TAG, "Failed to do some action for login.", authError);
     }
 }
