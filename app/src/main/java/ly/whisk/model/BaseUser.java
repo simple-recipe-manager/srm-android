@@ -5,13 +5,13 @@ import org.parceler.Parcel;
 /**
  * Created by breland on 3/15/15.
  */
-@Parcel
+@Parcel(Parcel.Serialization.METHOD)
 public class BaseUser {
 
     public static String USER_EXTRA_KEY = "USER";
-    String id;
-    String name;
-    String postalCode;
+    private String id;
+    private String name;
+    private String postalCode;
 
     public BaseUser() {
 
