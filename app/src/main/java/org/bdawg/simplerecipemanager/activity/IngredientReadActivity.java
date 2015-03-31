@@ -3,8 +3,8 @@ package org.bdawg.simplerecipemanager.activity;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 
-import org.bdawg.simplerecipemanager.utils.Rational;
-import org.bdawg.simplerecipemanager.utils.TagHelper;
+import org.bdawg.simplerecipemanager.utils.RationalUtil;
+import org.bdawg.simplerecipemanager.utils.TagUtil;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -17,7 +17,7 @@ import ly.whisk.model.Recipe;
 /**
  * Created by breland on 1/31/2015.
  */
-public class IngredientReadActivityWithMetrics extends AbstractCognitoActivityWithMetrics implements TextToSpeech.OnInitListener {
+public class IngredientReadActivity extends AbstractCognitoActivityWithMetrics implements TextToSpeech.OnInitListener {
 
     private Recipe recipe;
     private TextToSpeech ttsEngine;
@@ -46,11 +46,11 @@ public class IngredientReadActivityWithMetrics extends AbstractCognitoActivityWi
                 if (wholeAmount != ia.getValue()) {
                     //format
                     amount.append(wholeAmount);
-                    amount.append(String.format(" %s", Rational.toRational(ia.getValue() - wholeAmount)));
+                    amount.append(String.format(" %s", RationalUtil.toRational(ia.getValue() - wholeAmount)));
                 } else {
                     amount.append(wholeAmount);
                 }
-                String formattedIngr = String.format("%s %s %s", amount.toString(), TagHelper.getAppropriateTag(ia), ia.getIngredient().getName());
+                String formattedIngr = String.format("%s %s %s", amount.toString(), TagUtil.getAppropriateTag(ia), ia.getIngredient().getName());
                 this.speak(formattedIngr);
             }
         } else {

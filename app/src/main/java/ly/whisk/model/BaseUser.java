@@ -2,19 +2,25 @@ package ly.whisk.model;
 
 import org.parceler.Parcel;
 
+import java.io.Serializable;
+
 /**
  * Created by breland on 3/15/15.
  */
-@Parcel(Parcel.Serialization.METHOD)
-public class BaseUser {
+@Parcel
+public class BaseUser implements Serializable {
 
     public static String USER_EXTRA_KEY = "USER";
-    private String id;
-    private String name;
-    private String postalCode;
+    String id;
+    String name;
 
     public BaseUser() {
 
+    }
+
+    public BaseUser(String id, String name){
+        this.id = id;
+        this.name = name;
     }
 
     public String getId() {
@@ -33,11 +39,4 @@ public class BaseUser {
         this.name = name;
     }
 
-    public String getPostalCode() {
-        return postalCode;
-    }
-
-    public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
-    }
 }

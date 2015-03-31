@@ -7,13 +7,13 @@ import android.preference.PreferenceManager;
 /**
  * Created by brelandm on 3/6/15.
  */
-public class PrefrencesUtils {
+public class PrefrencesUtil {
 
     private SharedPreferences preferences;
     private final String GUEST_MODE = "guest_mode";
 
 
-    public PrefrencesUtils(Context c){
+    public PrefrencesUtil(Context c){
         this.preferences = PreferenceManager.getDefaultSharedPreferences(c);
     }
 

@@ -17,9 +17,9 @@ import android.widget.TextView;
 import com.koushikdutta.ion.Ion;
 
 import org.bdawg.simplerecipemanager.R;
-import org.bdawg.simplerecipemanager.activity.IngredientReadActivityWithMetrics;
-import org.bdawg.simplerecipemanager.utils.Rational;
-import org.bdawg.simplerecipemanager.utils.TagHelper;
+import org.bdawg.simplerecipemanager.activity.IngredientReadActivity;
+import org.bdawg.simplerecipemanager.utils.RationalUtil;
+import org.bdawg.simplerecipemanager.utils.TagUtil;
 import org.bdawg.simplerecipemanager.views.IngredientView;
 
 import java.text.DateFormat;
@@ -65,7 +65,7 @@ public class RecipeFragment extends Fragment {
         readAsTTSButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent recipeTTSIntent = new Intent(RecipeFragment.this.getActivity(), IngredientReadActivityWithMetrics.class);
+                Intent recipeTTSIntent = new Intent(RecipeFragment.this.getActivity(), IngredientReadActivity.class);
                 recipeTTSIntent.putExtras(getArguments());
                 RecipeFragment.this.startActivity(recipeTTSIntent);
             }
@@ -109,11 +109,11 @@ public class RecipeFragment extends Fragment {
                 if (wholeAmount != ia.getValue().doubleValue()) {
                     //format
                     amount.append(wholeAmount);
-                    amount.append(String.format(" %s", Rational.toRational(ia.getValue() - wholeAmount)));
+                    amount.append(String.format(" %s", RationalUtil.toRational(ia.getValue() - wholeAmount)));
                 } else {
                     amount.append(wholeAmount);
                 }
-                String formattedIngr = String.format("%s %s %s", amount.toString(), TagHelper.getAppropriateTag(ia), ia.getIngredient().getName());
+                String formattedIngr = String.format("%s %s %s", amount.toString(), TagUtil.getAppropriateTag(ia), ia.getIngredient().getName());
                 IngredientView ingrView = new IngredientView(getActivity(), null);
                 ingrView.setText(formattedIngr);
                 ingredientChecklist.addView(ingrView);

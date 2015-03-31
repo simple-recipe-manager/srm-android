@@ -9,8 +9,11 @@ import com.amazonaws.auth.IdentityChangedListener;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.AnalyticsConfig;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.InitializationException;
 import com.amazonaws.mobileconnectors.amazonmobileanalytics.MobileAnalyticsManager;
+import com.amazonaws.mobileconnectors.cognito.CognitoSyncManager;
 import com.amazonaws.regions.Regions;
 
+
+import org.bdawg.simplerecipemanager.utils.CognitoSyncClientUtil;
 
 import java.util.Map;
 
@@ -23,19 +26,13 @@ public abstract class AbstractCognitoActivityWithMetrics extends BaseActivity im
 
     private static final String TAG = AbstractCognitoActivityWithMetrics.class.getSimpleName();
     private static MobileAnalyticsManager analytics;
-
     private CognitoCredentialsProvider cognitoProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        cognitoProvider = new CognitoCachingCredentialsProvider(
-                this.getApplicationContext(),
-                "us-east-1:866d80cc-24e2-4c83-b6b4-f1c722310e23",
-                Regions.US_EAST_1
-        );
-        cognitoProvider.registerIdentityChangedListener(this);
-
+        CognitoSyncClientUtil.init(this);
+        this.cognitoProvider = CognitoSyncClientUtil.getCredentialsProvider();
         try {
             AnalyticsConfig config = new AnalyticsConfig();
             config.withAllowsWANDelivery(true);
@@ -54,24 +51,6 @@ public abstract class AbstractCognitoActivityWithMetrics extends BaseActivity im
     @Override
     public void identityChanged(String oldIdentity, String newIdentity) {
 
-    }
-
-    public CognitoCredentialsProvider getCognitoProvider() {
-        return this.cognitoProvider;
-    }
-
-    public void addCognitoCredentials(Map<String, String> tokens) {
-        this.cognitoProvider.setLogins(tokens);
-        this.cognitoProvider.refresh();
-        if (this.getUser() == null) {
-            BaseUser newUser = new BaseUser();
-            this.setUser(newUser);
-        }
-        this.getUser().setId(this.cognitoProvider.getIdentityId());
-    }
-
-    public boolean cognitoIsAuthorizedWithLogins() {
-        return this.getCognitoProvider().getLogins() != null && this.getCognitoProvider().getLogins().size() > 0;
     }
 
     @Override

@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Parcelable;
 
-import org.bdawg.simplerecipemanager.utils.PrefrencesUtils;
+import org.bdawg.simplerecipemanager.utils.PrefrencesUtil;
 import org.parceler.Parcels;
 
 import ly.whisk.model.BaseUser;
@@ -14,23 +14,24 @@ import ly.whisk.model.BaseUser;
  */
 public class BaseActivity extends Activity {
 
-    private PrefrencesUtils prefrences;
+    private PrefrencesUtil prefrences;
     private BaseUser user;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.prefrences = new PrefrencesUtils(this);
-        Parcelable userExtra = this.getIntent().getParcelableExtra(BaseUser.USER_EXTRA_KEY);
+        this.prefrences = new PrefrencesUtil(this);
+        getIntent().setExtrasClassLoader(BaseUser.class.getClassLoader());
+        BaseUser userExtra = (BaseUser) getIntent().getSerializableExtra(BaseUser.USER_EXTRA_KEY);
         if (userExtra == null) {
             this.user = new BaseUser();
         } else {
-            this.user = Parcels.unwrap(userExtra);
+            this.user = userExtra;
         }
     }
 
-    public PrefrencesUtils getPrefrences() {
+    public PrefrencesUtil getPrefrences() {
         return this.prefrences;
     }
 

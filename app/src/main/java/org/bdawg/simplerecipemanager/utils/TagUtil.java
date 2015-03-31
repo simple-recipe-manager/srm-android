@@ -5,8 +5,8 @@ import ly.whisk.model.IngredientAndAmount;
 /**
  * Created by breland on 2/15/15.
  */
-public class TagHelper {
-    private TagHelper(){
+public class TagUtil {
+    private TagUtil(){
 
     }
     public static String getAppropriateTag(IngredientAndAmount amt) {

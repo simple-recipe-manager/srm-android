@@ -3,7 +3,7 @@ package org.bdawg.simplerecipemanager.utils;
 /**
  * Created by breland on 1/30/2015.
  */
-public class Rational {
+public class RationalUtil {
 
     public static String toRational(double d) {
         double tolerance = 1.0E-6;

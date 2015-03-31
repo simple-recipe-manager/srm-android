@@ -29,10 +29,10 @@ import ly.whisk.api.RecipesApi;
 import ly.whisk.model.Recipe;
 
 
-public class MainActivityWithMetrics extends AbstractCognitoActivityWithMetrics {
+public class MainActivity extends AbstractCognitoActivityWithMetrics {
 
 
-    private static final String TAG = MainActivityWithMetrics.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
@@ -202,7 +202,7 @@ public class MainActivityWithMetrics extends AbstractCognitoActivityWithMetrics 
             loginButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    startActivity(new Intent(PlaceholderFragment.this.getActivity(), LoginActivityWithMetrics.class));
+                    startActivity(new Intent(PlaceholderFragment.this.getActivity(), LoginActivity.class));
                 }
             });
             return rootView;

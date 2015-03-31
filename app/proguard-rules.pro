@@ -73,3 +73,9 @@
 -keep @org.parceler.Parcel class * { *; }
 -keep class **$$Parcelable { *; }
 -keep class org.parceler.Parceler$$Parcels
+
+-keep class ly.whisk.model.**
+
+-dontshrink
+-dontoptimize
+-dontobfuscate
